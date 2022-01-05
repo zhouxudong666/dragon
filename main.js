@@ -1,44 +1,44 @@
 var loadingNum = 0;
-window.boot = function () {
+window.boot = function() {
     var settings = window._CCSettings;
     window._CCSettings = undefined;
     var onProgress = null;
-    
+
     var RESOURCES = cc.AssetManager.BuiltinBundleName.RESOURCES;
     var INTERNAL = cc.AssetManager.BuiltinBundleName.INTERNAL;
     var MAIN = cc.AssetManager.BuiltinBundleName.MAIN;
 
 
-    function setLoadingDisplay () {
+    function setLoadingDisplay() {
         // Loading splash scene
         var splash = document.getElementById('splash');
         var loadintT = document.getElementById("loadingText")
         // var progressBar = splash.querySelector('.progress-bar span');
-        cc.loader.onProgress = function (finish, total, item) {
-            loadData.completedCount = finish;
-            loadData.totalCount = total;
-			
-			var percent = 100 * finish / total;
-			if(loadingNum >= 1 && total > 1){
-				if(percent.toFixed(0) >= 100){
-                    loadintT.innerHTML = 'loading......100' + '%';
-                    clearInterval(timer); 
-                    setTimeout(function(){
-                        loadintT.remove();
-                    },0.1 * 1000);
-				}
-			}
-            loadingNum++;
+        cc.loader.onProgress = function(finish, total, item) {
+            // loadData.completedCount = finish;
+            // loadData.totalCount = total;
+
+            // var percent = 100 * finish / total;
+            // if(loadingNum >= 1 && total > 1){
+            // 	if(percent.toFixed(0) >= 100){
+            //         loadintT.innerHTML = 'loading......100' + '%';
+            //         clearInterval(timer); 
+            //         setTimeout(function(){
+            //             loadintT.remove();
+            //         },0.1 * 1000);
+            // 	}
+            // }
+            // loadingNum++;
         };
         splash.style.display = 'block';
         // progressBar.style.width = '0%';
 
-        cc.director.once(cc.Director.EVENT_AFTER_SCENE_LAUNCH, function () {
+        cc.director.once(cc.Director.EVENT_AFTER_SCENE_LAUNCH, function() {
             splash.style.display = 'none';
         });
     }
 
-    var onStart = function () {
+    var onStart = function() {
 
         cc.view.enableRetina(true);
         cc.view.resizeWithBrowserSize(true);
@@ -50,8 +50,7 @@ window.boot = function () {
         if (cc.sys.isMobile) {
             if (settings.orientation === 'landscape') {
                 cc.view.setOrientation(cc.macro.ORIENTATION_LANDSCAPE);
-            }
-            else if (settings.orientation === 'portrait') {
+            } else if (settings.orientation === 'portrait') {
                 cc.view.setOrientation(cc.macro.ORIENTATION_PORTRAIT);
             }
             // cc.view.enableAutoFullScreen([
@@ -75,16 +74,16 @@ window.boot = function () {
         }
 
         var launchScene = settings.launchScene;
-        var bundle = cc.assetManager.bundles.find(function (b) {
+        var bundle = cc.assetManager.bundles.find(function(b) {
             return b.getSceneInfo(launchScene);
         });
         var canvas;
         if (cc.sys.isBrowser) {
             canvas = document.getElementById('GameCanvas');
         }
-        
+
         var MainManger = __require("MainManage");
-        MainManger.init(launchScene,cc.sys.isBrowser,canvas.style.visibility);
+        MainManger.init(launchScene, cc.sys.isBrowser, canvas.style.visibility);
         // bundle.loadScene(launchScene, null, onProgress,
         //     function (err, scene) {
         //         if (!err) {
@@ -113,27 +112,30 @@ window.boot = function () {
         collisionMatrix: settings.collisionMatrix,
     };
 
-    cc.assetManager.init({ 
+    cc.assetManager.init({
         bundleVers: settings.bundleVers,
         remoteBundles: settings.remoteBundles,
         server: settings.server
     });
-    
+
     var bundleRoot = [INTERNAL];
     settings.hasResourcesBundle && bundleRoot.push(RESOURCES);
 
     var count = 0;
-    function cb (err) {
+
+    function cb(err) {
         if (err) return console.error(err.message, err.stack);
         count++;
         if (count === bundleRoot.length + 1) {
-            cc.assetManager.loadBundle(MAIN, function (err) {
+            cc.assetManager.loadBundle(MAIN, function(err) {
                 if (!err) cc.game.run(option, onStart);
             });
         }
     }
 
-    cc.assetManager.loadScript(settings.jsList.map(function (x) { return 'src/' + x;}), cb);
+    cc.assetManager.loadScript(settings.jsList.map(function(x) {
+        return 'src/' + x;
+    }), cb);
 
     for (var i = 0; i < bundleRoot.length; i++) {
         cc.assetManager.loadBundle(bundleRoot[i], cb);
@@ -149,8 +151,7 @@ if (window.jsb) {
             require('src/physics.js');
         }
         require('jsb-adapter/engine/index.js');
-    }
-    else {
+    } else {
         require('src/settings.js');
         require('src/cocos2d-jsb.js');
         if (CC_PHYSICS_BUILTIN || CC_PHYSICS_CANNON) {
